@@ -3,13 +3,13 @@
 local DB_HOST = ""
 local DB_USERNAME = ""
 local DB_PASSWORD = ""
-local DB_SMF_DATABASE = ""
+local DB_FORUM_DATABASE = ""
 local DB_PORT = 3306
 
-local Table_Prefix = "smf_" --leave this if you don't know what it does 
+local Forum_Mod = "smf" --currently only supports SMF
 
 GroupID={
-    ["user"]=0, -- 0 is the default SMF group
+    ["user"]=0, -- 0 is the default group for SMF and 2 is the default for MyBB
     ["admin"]=12,
     ["moderator"]=13,
     ["owner"]=1,
@@ -26,7 +26,7 @@ require ("mysqloo")
 
 local dbconnected = false
 
-local db = mysqloo.connect(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_SMF_DATABASE, DB_PORT)
+local db = mysqloo.connect(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_FORUM_DATABASE, DB_PORT)
 
 function QueryDB( query, callback )
     q = db:query(query)
@@ -65,9 +65,19 @@ function db:onConnected()
 end
 
 function playerJoin( ply )
-    local steamID = ply:SteamID64()
-    local getID = GroupID[ply:GetUserGroup()]
-    local query = "SELECT * FROM "..Table_Prefix.."members WHERE member_name="..steamID..";"
+	
+   local steamID = ply:SteamID64()
+   local getID = GroupID[ply:GetUserGroup()]
+   
+   if Forum_Mod =="smf" then
+   		Table_Prefix = "smf_"
+   		querycheck = "SELECT * FROM "..Table_Prefix.."members WHERE member_name="..steamID..";"
+   elseif Forum_Mod == "mybb" then
+   		Table_Prefix = "mybb_"
+   		querycheck = "SELECT * FROM "..Table_Prefix.."members WHERE member_name="..steamID..";"
+   end
+   
+    local query = querycheck
     
     QueryDB(query, function(data)
 		PrintTable(data)
