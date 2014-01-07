@@ -1,0 +1,11 @@
+"AddonInfo"
+{
+	"name"				"SMF Group SYNC"
+	"version"			"1.0"
+	"up_date"			"00/00/00"
+	"author_name"			"Godz"
+	"author_email"			"godz@godzbro.com"
+	"author_url"			"http://www.godzttt.com"
+	"info"				"Sync Your SMF groups with your ULX groups."
+	"override"			"0"
+}
