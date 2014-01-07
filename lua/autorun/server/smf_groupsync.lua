@@ -6,6 +6,8 @@ local DB_PASSWORD = ""
 local DB_SMF_DATABASE = ""
 local DB_PORT = 3306
 
+local Table_Prefix = "smf_" --leave this if you don't know what it does 
+
 GroupID={
     ["user"]=0, -- 0 is the default SMF group
     ["admin"]=12,
@@ -14,6 +16,7 @@ GroupID={
     ["donator"]=15
 }
 
+--end of config
 
 function log (msg)
 	ServerLog(msg.."\n")
@@ -64,12 +67,12 @@ end
 function playerJoin( ply )
     local steamID = ply:SteamID64()
     local getID = GroupID[ply:GetUserGroup()]
-    local query = "SELECT * FROM smf_members WHERE member_name="..steamID..";"
+    local query = "SELECT * FROM "..Table_Prefix.."members WHERE member_name="..steamID..";"
     
     QueryDB(query, function(data)
 		PrintTable(data)
         if data[1]["id_group"] != getID then
-            local queryB = "UPDATE smf_members SET id_group="..getID.." WHERE member_name="..steamID..";"
+            local queryB = "UPDATE "..Table_Prefix.."members SET id_group="..getID.." WHERE member_name="..steamID..";"
 			
 			QueryDB(queryB, function() end)
         end
