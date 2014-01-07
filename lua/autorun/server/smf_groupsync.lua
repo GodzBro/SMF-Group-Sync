@@ -19,8 +19,6 @@ function log (msg)
 	ServerLog(msg.."\n")
 end
 
-log("Initiating SMF group sync.")
-
 require ("mysqloo")
 
 local dbconnected = false
