@@ -25,7 +25,7 @@ local Sync_Method = "SteamID"
 --Your ULX group must equal your SMF group's ID.
 --See Facepunch/Coderhire post for details.
 GroupID={
-    ["user"]=0,
+    ["user"]=0, --0 is the default SMF group
     ["donator"]=2,
     ["operator"]=3,
     ["moderator"]=4,
@@ -65,7 +65,7 @@ function QueryDB(query, callback)
 			db:connect()
 			
 			function db:onConnected()
-					q:start()
+				q:start()
 			end
 			
 		end
