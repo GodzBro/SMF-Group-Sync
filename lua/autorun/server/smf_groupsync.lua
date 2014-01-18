@@ -40,17 +40,17 @@ GroupID={
 
 
 function log (msg)
-	ServerLog("[SMF Group Sync] "..msg.."\n")
+	ServerLog("[SMF Group Sync] " . . msg . . "\n")
 end
 
 require ("mysqloo")
 
 local db = mysqloo.connect(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_FORUM_DATABASE, DB_PORT)
 
-function QueryDB( query, callback )
+function QueryDB(query, callback)
     q = db:query(query)
     
-    function q:onSuccess( result )
+    function q:onSuccess(result)
         if callback then
             callback(result)
         end
@@ -108,6 +108,7 @@ end
 
 function FlipTable( table , NewTable )
 	local NewTable = {}
+	
 	for k, v in next, table do
 		local key = k
 		local value = tostring(v)
