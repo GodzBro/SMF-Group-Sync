@@ -40,7 +40,7 @@ GroupID={
 
 
 function log (msg)
-	ServerLog("[SMF Group Sync] " . . msg . . "\n")
+	ServerLog("[SMF Group Sync] "..msg.."\n")
 end
 
 require ("mysqloo")
