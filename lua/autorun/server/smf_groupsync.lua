@@ -23,10 +23,11 @@ local ULX_to_SMF = true
 local Sync_Method = "SteamID"
 
 --Your ULX group must equal your SMF group's ID.
---See Facepunch/Coderhire post for details.
+--Every line except the last one should be followed
+--by a comma. See Facepunch/Coderhire post for details.
 GroupID={
     ["user"]=0, --0 is the default SMF group
-    ["donator"]=2,
+    ["donator"]=2, 
     ["operator"]=3,
     ["moderator"]=4,
     ["admin"]=5,
@@ -90,7 +91,7 @@ function splitPort( ip )
 end
 
 
-if Forum_Mod == "smf" and Sync_Method = "SteamID" then
+if Forum_Mod == "smf" and Sync_Method == "SteamID" then
 	querycheck = "SELECT * FROM smf_members WHERE member_name="..steamID..";"
 	queryB = "UPDATE smf_members SET id_group="..getID.." WHERE member_ip='"..splitPort(ply:IPAddress()).."';"
 elseif Forum_Mod == "smf" and Sync_Method == "IP" then
