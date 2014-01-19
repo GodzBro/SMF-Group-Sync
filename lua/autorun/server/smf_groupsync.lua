@@ -90,23 +90,6 @@ function splitPort( ip )
 	return str
 end
 
-
-if Forum_Mod == "smf" and Sync_Method == "SteamID" then
-	querycheck = "SELECT * FROM smf_members WHERE member_name="..steamID..";"
-	queryB = "UPDATE smf_members SET id_group="..getID.." WHERE member_ip='"..splitPort(ply:IPAddress()).."';"
-elseif Forum_Mod == "smf" and Sync_Method == "IP" then
-	querycheck = "SELECT * FROM smf_members WHERE member_ip='"ply:IPAddress()"'"
-	queryB = "UPDATE smf_members SET id_group="..getID.." WHERE member_ip='"..splitPort(ply:IPAddress()).."';"
-elseif Forum_Mod == "mybb" then
-	timer.Simple(10, function() log("Error: MyBB is not supported yet. Talk with Godz if you would like to see this happen.") end)
-elseif Forum_Mod != "smf" then 
-	timer.Simple(10, function() log("Error: \""..Forum_Mod.."\" is not a valid forum mod.") end)
-elseif Sync_Method == "" or nil then
-	timer.Simple(10, function() log("Please choose a sync method.") end)
-else
-	timer.Simple(10, function() log("Something went wrong, please contact Godz.") end)
-end
-
 function FlipTable( table , NewTable )
 	local NewTable = {}
 	
@@ -122,6 +105,23 @@ end
 
 
 function playerJoin( ply )
+   
+   if Forum_Mod == "smf" and Sync_Method == "SteamID" then
+      querycheck = "SELECT * FROM smf_members WHERE member_name="..steamID..";"
+      queryB = "UPDATE smf_members SET id_group="..getID.." WHERE member_ip='"..splitPort(ply:IPAddress()).."';"
+   elseif Forum_Mod == "smf" and Sync_Method == "IP" then
+      querycheck = "SELECT * FROM smf_members WHERE member_ip='"ply:IPAddress()"'"
+      queryB = "UPDATE smf_members SET id_group="..getID.." WHERE member_ip='"..splitPort(ply:IPAddress()).."';"
+   elseif Forum_Mod == "mybb" then
+      timer.Simple(10, function() log("Error: MyBB is not supported yet. Talk with Godz if you would like to see this happen.") end)
+   elseif Forum_Mod != "smf" then 
+      timer.Simple(10, function() log("Error: \""..Forum_Mod.."\" is not a valid forum mod.") end)
+   elseif Sync_Method == "" or nil then
+      timer.Simple(10, function() log("Please choose a sync method.") end)
+   else
+      timer.Simple(10, function() log("Something went wrong, please contact Godz.") end) 
+   end	
+
 	
    local steamID = ply:SteamID64()
    local getID = GroupID[ply:GetUserGroup()]
