@@ -4,7 +4,7 @@
 local DB_HOST = ""
 local DB_USERNAME = ""
 local DB_PASSWORD = ""
-local DB_SMF_DATABASE = ""
+local DB_FORUM_DATABASE = ""
 local DB_PORT = 3306
 
 --Currently only supports SMF
