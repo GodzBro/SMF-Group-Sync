@@ -106,6 +106,9 @@ end
 
 function playerJoin( ply )
    
+   local steamID = ply:SteamID64()
+   local getID = GroupID[ply:GetUserGroup()]
+   
    if Forum_Mod == "smf" and Sync_Method == "SteamID" then
       querycheck = "SELECT * FROM smf_members WHERE member_name="..steamID..";"
       queryB = "UPDATE smf_members SET id_group="..getID.." WHERE member_ip='"..splitPort(ply:IPAddress()).."';"
@@ -121,10 +124,6 @@ function playerJoin( ply )
    else
       timer.Simple(10, function() log("Something went wrong, please contact Godz.") end) 
    end	
-
-	
-   local steamID = ply:SteamID64()
-   local getID = GroupID[ply:GetUserGroup()]
     
     QueryDB(querycheck, function(data)
 		
