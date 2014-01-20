@@ -110,7 +110,7 @@ function playerJoin( ply )
       querycheck = "SELECT * FROM smf_members WHERE member_name="..steamID..";"
       queryB = "UPDATE smf_members SET id_group="..getID.." WHERE member_ip='"..splitPort(ply:IPAddress()).."';"
    elseif Forum_Mod == "smf" and Sync_Method == "IP" then
-      querycheck = "SELECT * FROM smf_members WHERE member_ip='"ply:IPAddress()"'"
+      querycheck = "SELECT * FROM smf_members WHERE member_ip='"..splitPort(ply:IPAddress())"'"
       queryB = "UPDATE smf_members SET id_group="..getID.." WHERE member_ip='"..splitPort(ply:IPAddress()).."';"
    elseif Forum_Mod == "mybb" then
       timer.Simple(10, function() log("Error: MyBB is not supported yet. Talk with Godz if you would like to see this happen.") end)
