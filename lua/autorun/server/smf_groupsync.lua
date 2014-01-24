@@ -7,14 +7,14 @@ local DB_PASSWORD = ""
 local DB_FORUM_DATABASE = ""
 local DB_PORT = 3306
 
---Currently only supports SMF
+--Currently only supports SMF and MyBB
 local Forum_Mod = "smf"
 
---Should it sync according to SMF's groups?
-local SMF_to_ULX = true
+--Should it sync according to SMF/MyBB's groups?
+local FORUM_to_ULX = true
 
---Should it sync according to ULX's groups?
-local ULX_to_SMF = true
+--Should it sync according to ULX groups?
+local ULX_to_FORUM = true
 
 --"SteamID" or "IP". If you have "IP" enabled, you don't have
 --to have Steam logins setup but this method is dangerous
@@ -22,11 +22,11 @@ local ULX_to_SMF = true
 --Keep "SteamID" if possible.
 local Sync_Method = "SteamID"
 
---Your ULX group must equal your SMF group's ID.
+--Your ULX group must equal your Forum's group's ID.
 --Every line except the last one should be followed
 --by a comma. See Facepunch/Coderhire post for details.
 GroupID={
-    ["user"]=0, --0 is the default SMF group
+    ["user"]=0, --0 is the default SMF group; 2 is the default MyBB group
     ["donator"]=2, 
     ["operator"]=3,
     ["moderator"]=4,
@@ -41,7 +41,7 @@ GroupID={
 
 
 function log (msg)
-	ServerLog("[SMF Group Sync] "..msg.."\n")
+	ServerLog("[Forum Group Sync] "..msg.."\n")
 end
 
 require ("mysqloo")
@@ -83,14 +83,14 @@ function db:onConnected()
     log("Connection to SMF's MySQL (v"..db:serverVersion()..") database successful.")
 end
 
-function splitPort( ip )
-	local pos = string.find( ip, ":" )
-	local str = string.sub( ip, 1, pos - 1 )
+function splitPort(ip)
+	local pos = string.find(ip, ":")
+	local str = string.sub(ip, 1, pos - 1)
 	
 	return str
 end
 
-function FlipTable( table , NewTable )
+function FlipTable(table, NewTable)
 	local NewTable = {}
 	
 	for k, v in next, table do
@@ -104,51 +104,74 @@ function FlipTable( table , NewTable )
 end
 
 
-function playerJoin( ply )
+function playerJoin(ply)
    
    local steamID = ply:SteamID64()
+   local low_mod = string.lower(Forum_Mod)
+   local low_method = string.lower(Sync_Method)
    local getID = GroupID[ply:GetUserGroup()]
+   local IP = splitPort(ply:IPAddress())
    
-   if Forum_Mod == "smf" and Sync_Method == "SteamID" then
+   if low_mod == "smf" and low_method == "steamid" then
       querycheck = "SELECT * FROM smf_members WHERE member_name="..steamID..";"
-      queryB = "UPDATE smf_members SET id_group="..getID.." WHERE member_ip='"..splitPort(ply:IPAddress()).."';"
-   elseif Forum_Mod == "smf" and Sync_Method == "IP" then
-      querycheck = "SELECT * FROM smf_members WHERE member_ip='"..splitPort(ply:IPAddress())"'"
-      queryB = "UPDATE smf_members SET id_group="..getID.." WHERE member_ip='"..splitPort(ply:IPAddress()).."';"
-   elseif Forum_Mod == "mybb" then
-      timer.Simple(10, function() log("Error: MyBB is not supported yet. Talk with Godz if you would like to see this happen.") end)
-   elseif Forum_Mod != "smf" then 
+      queryB = "UPDATE smf_members SET id_group="..getID.." WHERE member_ip='"..IP.."';"
+   elseif low_mod == "smf" and low_method == "ip" then
+      querycheck = "SELECT * FROM smf_members WHERE member_ip='"..IP.."';"
+      queryB = "UPDATE smf_members SET id_group="..getID.." WHERE member_ip='"..IP.."';"
+   elseif low_mod == "mybb" and low_method = "ip" then
+      querycheck = "SELECT * FROM mybb_users WHERE lastip='"..IP.."';"
+      queryB = "UPDATE mybb_users SET usergroup="..getID.." WHERE lastip='"..IP.."';"
+   elseif low_mod == "mybb" and low_method = "steamid" then
+      querycheck = "SELECT * FROM mybb_users WHERE loginname='"..steamID.."';"
+      queryB = "UPDATE mybb_users SET usergroup="..getID.." WHERE loginname='"..steamID.."';"
+   elseif low_mod != "smf"  then
       timer.Simple(10, function() log("Error: \""..Forum_Mod.."\" is not a valid forum mod.") end)
-   elseif Sync_Method == "" or nil then
+   elseif low_method == "" or nil then
       timer.Simple(10, function() log("Please choose a sync method.") end)
    else
-      timer.Simple(10, function() log("Something went wrong, please contact Godz.") end) 
+      timer.Simple(10, function() log("Something went wrong, please contact Godz.") end)
    end	
-    
+
+	    
     QueryDB(querycheck, function(data)
 		
-		if ULX_to_SMF then
+		if ULX_to_FORUM then
 			if data[1]["id_group"] != getID then
 		
-				--made an empty function because I don't know if you can have an empty arg like this
-				QueryDB( queryB, function() end )		
+				-- made an empty function because I don't know if you can have an empty arg like this
+				QueryDB(queryB, function() end)		
 			
+			elseif not data then
+				log("It appears that you do not have Steam logins set up. Please change your sync method or set up Steam logins.")
 			end
 		end
 		
-		if SMF_to_ULX then
+		if FORUM_to_ULX then
 			FlipTable(GroupID, ReversedGroupID)
 
 			ULib.ucl.addUser(ply:SteamID(), {}, {}, ReversedGroupID[data[1]["id_group"]])
 		end
-    end)
+	end)
+/*
+    local chars = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
+				"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+				1,2,3,4,5,6,7,8,9,0}
+	
+	local passwd = ""
+	for i = 1, 50 do
+		passwd = passwd .. table.Random(chars)
+	end
+	
+
     
+    QueryAddPlayer = "INSERT INTO Customers (member_name, date_registered, posts, id_group, real_name, instant_messages, unread_messages, new_pm, pm_prefs, passwd) VALUES ('"ply:Nick()"',"os.time()",0,"getID",'"ply:Nick()"',0,0,0,0, "");"
+*/
 end
 hook.Add("PlayerInitialSpawn", "queryOnJoin", playerJoin)
 --hook.Add("UCLChanged", "queryOnGroupChange", playerJoin)
 
-concommand.Add( "sync_status", function()
+concommand.Add("sync_status", function()
 	log(db:status())
-end )
+end)
 
 db:connect()
