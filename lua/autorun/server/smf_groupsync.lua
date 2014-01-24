@@ -118,10 +118,10 @@ function playerJoin(ply)
    elseif low_mod == "smf" and low_method == "ip" then
       querycheck = "SELECT * FROM smf_members WHERE member_ip='"..IP.."';"
       queryB = "UPDATE smf_members SET id_group="..getID.." WHERE member_ip='"..IP.."';"
-   elseif low_mod == "mybb" and low_method = "ip" then
+   elseif low_mod == "mybb" and low_method == "ip" then
       querycheck = "SELECT * FROM mybb_users WHERE lastip='"..IP.."';"
       queryB = "UPDATE mybb_users SET usergroup="..getID.." WHERE lastip='"..IP.."';"
-   elseif low_mod == "mybb" and low_method = "steamid" then
+   elseif low_mod == "mybb" and low_method == "steamid" then
       querycheck = "SELECT * FROM mybb_users WHERE loginname='"..steamID.."';"
       queryB = "UPDATE mybb_users SET usergroup="..getID.." WHERE loginname='"..steamID.."';"
    elseif low_mod != "smf"  then
