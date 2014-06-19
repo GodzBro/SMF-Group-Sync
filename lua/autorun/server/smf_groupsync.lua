@@ -90,17 +90,13 @@ function splitPort(ip)
 	return str
 end
 
-function FlipTable(table, NewTable)
-	local NewTable = {}
-	
-	for k, v in next, table do
-		local key = k
-		local value = tostring(v)
-
-		table.v = k
-	end
-
-	return NewTable
+function FlipTable(OldTable, NewTable)
+   
+   for k,v in pairs(OldTable) do
+     NewTable[v]=k
+   end
+   
+   return NewTable
 end
 
 
